@@ -1,0 +1,33 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow when pushing to the main branch
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Dependencies
+      run: pip install -r requirements.txt || echo "No dependencies required"
+
+    - name: Generate HTML Documentation
+      run: |
+        python -m pydoc -w src/celestial_platform  # Replace with your module path
+        mkdir -p docs && mv src/celestial_platform.html docs/
+
+    - name: Upload Documentation as an Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: html-docs
+        path: docs/
